@@ -16,7 +16,12 @@ fn main() {
 
         match matches.subcommand() {
             Some(("init", _sub_matches)) => init_repo(),
-            Some(("repo", sub_matches)) => clone_repo(sub_matches.value_of("REPO_PATH").unwrap().to_string()),
+            Some(("repo", sub_matches)) => 
+                if sub_matches.value_of("REPO_PATH").is_some() {
+                    clone_repo(sub_matches.value_of("REPO_PATH").unwrap().to_string())
+                } else {
+                    println!("You failed to provide a valid path...")
+                }
             _ => println!("You failed to enter any known command..."),
         }
 }
