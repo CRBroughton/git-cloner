@@ -33,7 +33,7 @@ fn init_repo() {
         .output()
         .expect("failed to initialised repository");
 
-        println!("{:?}", String::from_utf8_lossy(&output.stderr).trim_end());
+        println!("{:?}", String::from_utf8_lossy(&output.stdout).trim_end());
 }
 
 fn clone_repo(repo_link: String) {
