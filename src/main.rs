@@ -1,7 +1,8 @@
 use clap::{arg, Command};
 use serde::{Deserialize, Serialize};
 use serde_json;
-use std::{process::Command as OSCommand, fs::File, io::Read};
+use std::{process::Command as OSCommand, fs::File, io::{Read, Write}, error::Error};
+
 #[derive(Serialize, Deserialize)]
 #[derive(Debug)]
 struct JsonData {
@@ -38,12 +39,18 @@ fn main() {
     match matches.subcommand() {
         Some(("init", _sub_matches)) => init_repo(),
         Some(("cloner", _sub_matches)) => {
-            let cloner = parse_json_file().cloner;
-            clone_repo(cloner);
+            if json_data.is_ok() {
+                clone_repo(json_data.unwrap().cloner);
+            } else {
+                println!("Creating JSON File...");
+            }
         }
         Some(("vue", _sub_matches)) => {
-            let vue = parse_json_file().vue;
-            clone_repo(vue);
+            if json_data.is_ok() {
+                clone_repo(json_data.unwrap().vue);
+            } else {
+                println!("Creating JSON File...");
+            }
         }
         Some(("repo", sub_matches)) => {
             if sub_matches.value_of("REPO_PATH").is_some() {
@@ -56,14 +63,20 @@ fn main() {
     }
 }
 
-fn parse_json_file() -> JsonData {
-    let mut file = File::open("repos.json").unwrap();
+fn create_repos_file()-> Result<(), Box<dyn Error>> {
+    let mut file = File::create("repos.json")?;
+    file.write_all(b"Hello, world!")?;
+    Ok(())
+}
+
+fn parse_json_file() -> Result<JsonData, Box<dyn Error>> {
+    let mut file = File::open("repos.json")?;
     let mut buff = String::new();
     file.read_to_string(&mut buff).unwrap();
  
     let foo: JsonData = serde_json::from_str(&buff).unwrap();
 
-    foo
+    Ok(foo)
 }
 
 fn init_repo() {
