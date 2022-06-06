@@ -20,11 +20,21 @@ fn main() {
                 .about("Your chosen repository")
                 .arg(arg!([REPO_PATH])),
         )
+        .subcommand(Command::new("cloner").about("Clones this repository"))
+        .subcommand(Command::new("vue").about("Clones the Vue repository"))
         .subcommand(Command::new("init").about("Initialises a git repository"))
         .get_matches();
 
     match matches.subcommand() {
         Some(("init", _sub_matches)) => init_repo(),
+        Some(("cloner", _sub_matches)) => {
+            let cloner = parse_json_file().cloner;
+            clone_repo(cloner);
+        }
+        Some(("vue", _sub_matches)) => {
+            let vue = parse_json_file().vue;
+            clone_repo(vue);
+        }
         Some(("repo", sub_matches)) => {
             if sub_matches.value_of("REPO_PATH").is_some() {
                 clone_repo(sub_matches.value_of("REPO_PATH").unwrap().to_string())
