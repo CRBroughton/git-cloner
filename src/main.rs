@@ -1,18 +1,5 @@
 use clap::{arg, Command};
-use serde::{Deserialize, Serialize};
-use serde_json;
-use std::{
-    error::Error,
-    fs::File,
-    io::{Read, Write},
-    process::Command as OSCommand,
-};
-
-#[derive(Serialize, Deserialize, Debug)]
-struct JsonData {
-    cloner: String,
-    vue: String,
-}
+use git_cloner::{parse_json_file, create_repos_file, init_repo, clone_repo};
 
 fn main() {
     let matches = Command::new("Git Cloner")
@@ -68,37 +55,3 @@ fn main() {
     }
 }
 
-fn create_repos_file() -> Result<(), Box<dyn Error>> {
-    let mut file = File::create("repos.json")?;
-    file.write_all(b"Hello, world!")?;
-    Ok(())
-}
-
-fn parse_json_file() -> Result<JsonData, Box<dyn Error>> {
-    let mut file = File::open("repos.json")?;
-    let mut buff = String::new();
-    file.read_to_string(&mut buff).unwrap();
-
-    let foo: JsonData = serde_json::from_str(&buff).unwrap();
-
-    Ok(foo)
-}
-
-fn init_repo() {
-    let output = OSCommand::new("git")
-        .arg("init")
-        .output()
-        .expect("failed to initialised repository");
-
-    println!("{:?}", String::from_utf8_lossy(&output.stdout).trim_end());
-}
-
-fn clone_repo(repo_link: String) {
-    let output = OSCommand::new("git")
-        .arg("clone")
-        .arg(repo_link)
-        .output()
-        .expect("failed to initialised repository");
-
-    println!("{:?}", String::from_utf8_lossy(&output.stderr).trim_end());
-}
