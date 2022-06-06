@@ -1,5 +1,13 @@
 use clap::{arg, Command};
-use std::process::Command as OSCommand;
+use serde::{Deserialize, Serialize};
+use serde_json;
+use std::{process::Command as OSCommand, fs::File, io::Read};
+#[derive(Serialize, Deserialize)]
+#[derive(Debug)]
+struct JsonData {
+    cloner: String,
+    vue: String,
+}
 
 fn main() {
     let matches = Command::new("Git Cloner")
@@ -26,6 +34,16 @@ fn main() {
         }
         _ => println!("You failed to enter any known command..."),
     }
+}
+
+fn parse_json_file() -> JsonData {
+    let mut file = File::open("repos.json").unwrap();
+    let mut buff = String::new();
+    file.read_to_string(&mut buff).unwrap();
+ 
+    let foo: JsonData = serde_json::from_str(&buff).unwrap();
+
+    foo
 }
 
 fn init_repo() {
