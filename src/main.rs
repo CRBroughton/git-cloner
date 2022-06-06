@@ -11,7 +11,7 @@ struct JsonData {
 
 fn main() {
     let matches = Command::new("Git Cloner")
-        .version("0.0.1")
+        .version("0.1.0")
         .author("Craig R Broughton <CRBroughton@posteo.uk")
         .about("Clones git repositories")
         .arg_required_else_help(true)
