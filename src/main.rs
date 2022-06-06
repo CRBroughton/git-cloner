@@ -1,10 +1,14 @@
 use clap::{arg, Command};
 use serde::{Deserialize, Serialize};
 use serde_json;
-use std::{process::Command as OSCommand, fs::File, io::{Read, Write}, error::Error};
+use std::{
+    error::Error,
+    fs::File,
+    io::{Read, Write},
+    process::Command as OSCommand,
+};
 
-#[derive(Serialize, Deserialize)]
-#[derive(Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 struct JsonData {
     cloner: String,
     vue: String,
@@ -26,13 +30,14 @@ fn main() {
         .subcommand(Command::new("init").about("Initialises a git repository"))
         .get_matches();
 
-    
     let json_data = parse_json_file();
 
     if json_data.is_err() {
         match create_repos_file() {
-            Err(err) => { println!("{}", err)}
-            _ => println!("I don't know what's happening")
+            Err(err) => {
+                println!("{}", err)
+            }
+            _ => println!("I don't know what's happening"),
         }
     }
 
@@ -63,7 +68,7 @@ fn main() {
     }
 }
 
-fn create_repos_file()-> Result<(), Box<dyn Error>> {
+fn create_repos_file() -> Result<(), Box<dyn Error>> {
     let mut file = File::create("repos.json")?;
     file.write_all(b"Hello, world!")?;
     Ok(())
@@ -73,7 +78,7 @@ fn parse_json_file() -> Result<JsonData, Box<dyn Error>> {
     let mut file = File::open("repos.json")?;
     let mut buff = String::new();
     file.read_to_string(&mut buff).unwrap();
- 
+
     let foo: JsonData = serde_json::from_str(&buff).unwrap();
 
     Ok(foo)
