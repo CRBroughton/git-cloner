@@ -25,6 +25,16 @@ fn main() {
         .subcommand(Command::new("init").about("Initialises a git repository"))
         .get_matches();
 
+    
+    let json_data = parse_json_file();
+
+    if json_data.is_err() {
+        match create_repos_file() {
+            Err(err) => { println!("{}", err)}
+            _ => println!("I don't know what's happening")
+        }
+    }
+
     match matches.subcommand() {
         Some(("init", _sub_matches)) => init_repo(),
         Some(("cloner", _sub_matches)) => {
